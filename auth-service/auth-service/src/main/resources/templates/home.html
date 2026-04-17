@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Home - Flight Management</title>
+
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#121a33;
+      --muted:#9aa6c2;
+      --text:#e8eeff;
+      --line:rgba(255,255,255,.12);
+      --accent:#6aa6ff;
+      --accent2:#7cf0c5;
+      --danger:#ff6a7a;
+      --shadow:0 18px 50px rgba(0,0,0,.45);
+      --radius:18px;
+      --radius2:12px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 700px at 20% 20%, rgba(106,166,255,.25), transparent 55%),
+        radial-gradient(900px 600px at 80% 25%, rgba(124,240,197,.18), transparent 50%),
+        radial-gradient(700px 500px at 60% 90%, rgba(255,106,122,.12), transparent 55%),
+        linear-gradient(180deg, #070a14, #0b1020 40%, #070a14);
+      padding:22px;
+    }
+
+   .wrap{
+  width: 100%;
+  margin: 0;
+  padding: 22px;          /* keeps breathing space */
+}
+
+    /* Navbar */
+    .navbar{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+
+  padding:14px 22px;
+
+   border-bottom: 1px solid var(--line);
+ border-radius: 0 0 22px 22px;                /* remove card rounding */
+  border: 0;                        /* remove card border */
+  border-bottom: 1px solid var(--line);
+
+  background: rgba(10, 14, 30, 0.78);
+  backdrop-filter: blur(12px);
+
+  box-shadow: 0 10px 30px rgba(0,0,0,.35);
+  z-index: 999;
+}
+
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      background:linear-gradient(135deg, rgba(106,166,255,.95), rgba(124,240,197,.85));
+      box-shadow:0 14px 30px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .logo:before{
+      content:"";
+      position:absolute; inset:-30%;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), transparent 45%);
+      transform:rotate(12deg);
+    }
+
+    /* Brand as navbar item */
+    .brand-link{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      text-decoration:none;
+      color:var(--text);
+      flex:0 0 auto;
+    }
+    .brand-text h2{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.2px;
+      line-height:1.2;
+    }
+    .brand-text p{
+      margin:3px 0 0;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    /* Center nav links */
+    .nav-links{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex: 1;
+      justify-content:center;
+      min-width: 0;
+    }
+    .nav-links a{
+      text-decoration:none;
+      color:var(--text);
+      font-size:13px;
+      font-weight:600;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.12);
+      transition:transform .08s ease, border-color .15s ease, background .15s ease;
+      white-space:nowrap;
+    }
+    .nav-links a:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+    }
+
+    /* User avatar + dropdown */
+    .user-menu{ position:relative; display:inline-block; flex:0 0 auto; }
+    .user-btn{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      cursor:pointer;
+      user-select:none;
+    }
+    .user-btn:hover{ border-color:rgba(255,255,255,.22); }
+
+.content{
+  margin-top: 90px;   /* adjust if your navbar height changes */
+}
+
+    .user-menu img{
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      border:2px solid rgba(106,166,255,.6);
+      object-fit:cover;
+    }
+    .user-name{
+      display:flex;
+      flex-direction:column;
+      line-height:1.1;
+    }
+    .user-name b{ font-size:13px; color:var(--text); }
+    .user-name span{ font-size:12px; color:var(--muted); }
+
+    .dropdown-content{
+      display:none;
+      position:absolute;
+      right:0;
+      margin-top:10px;
+      min-width:170px;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:rgba(18,26,51,.92);
+      box-shadow:0 18px 50px rgba(0,0,0,.5);
+      backdrop-filter: blur(10px);
+      z-index:20;
+    }
+    .dropdown-content a,
+    .dropdown-content form button{
+      display:block;
+      width:100%;
+      padding:12px 14px;
+      border:0;
+      text-align:left;
+      background:none;
+      color:var(--text);
+      text-decoration:none;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .dropdown-content a:hover,
+    .dropdown-content form button:hover{
+      background:rgba(255,255,255,.06);
+    }
+    .dropdown-content .danger:hover{
+      background:rgba(255,106,122,.12);
+      color:var(--danger);
+    }
+    .show{display:block}
+
+ 
+
+    .welcome{ display:block; margin:18px 0; }
+
+    .welcome-box{
+      width:100%;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .welcome-box h3{
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:.2px;
+    }
+    .welcome-box p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    /* Cards */
+    .tab-container{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap:16px;
+      margin-top:10px;
+    }
+
+    .tab{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 14px 35px rgba(0,0,0,.35);
+      transition:transform .12s ease, border-color .15s ease, box-shadow .15s ease;
+      cursor:pointer;
+      position:relative;
+      overflow:hidden;
+      min-height:140px;
+    }
+    .tab:before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:radial-gradient(circle at 30% 30%, rgba(106,166,255,.20), transparent 55%);
+      transform:rotate(10deg);
+      pointer-events:none;
+    }
+    .tab:hover{
+      transform:translateY(-3px);
+      border-color:rgba(255,255,255,.22);
+      box-shadow:0 18px 45px rgba(0,0,0,.5);
+    }
+
+    .tab h3{
+      margin:0 0 8px;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+    .tab p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .sub-options{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .sub-options a{
+      color:var(--text);
+      text-decoration:none;
+      font-weight:600;
+      font-size:13px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.16);
+      transition:transform .08s ease, border-color .15s ease, background .15s ease;
+      display:inline-flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .sub-options a:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+    }
+    .sub-options a:after{
+      content:"→";
+      color:rgba(232,238,255,.8);
+      font-weight:700;
+    }
+
+    /* Footer */
+    .footer{
+      margin:22px 0 6px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    @media (max-width: 900px){
+      .nav-links{ display:none; } /* Hide links on small screens */
+    }
+
+    @media (max-width: 780px){
+      body{padding:16px}
+      .navbar{top:10px}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <!-- Navbar -->
+    <div class="navbar">
+      <!-- Brand -->
+      <a class="brand-link" href="/home">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="brand-text">
+          <h2>Indian Airways</h2>
+          <p>Operations console</p>
+        </div>
+      </a>
+
+      <!-- Nav links -->
+      <nav class="nav-links" aria-label="Primary">
+        
+      </nav>
+
+      <!-- User menu -->
+      <div class="user-menu">
+        <div class="user-btn" onclick="toggleDropdown()" role="button" aria-haspopup="true" aria-expanded="false">
+          <img src="/images/user.jpeg" alt="User">
+          <div class="user-name">
+            <b th:text="${#strings.capitalize(username)}">User</b>
+           
+          </div>
+        </div>
+
+        <div id="dropdown" class="dropdown-content">
+          <a href="/settings">Settings</a>
+          <a href="/auth/logout" class="danger">Logout</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+<p><b>JWT Token:</b></p>
+<textarea rows="5" cols="80">[[${token}]]</textarea>
+
+      <!-- Full-width Welcome -->
+      <div class="welcome">
+        <div class="welcome-box">
+          <h3>Welcome to Flight Management System!</h3>
+          <p>You are successfully logged in.</p>
+          <p>Logged in as: <strong><b th:text="${#strings.capitalize(username)}">User</b></strong></p>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="tab-container">
+
+        <div class="tab">
+          <h3>Custom Flight Management</h3>
+          <p>Identify customer and locate the correct flight for servicing.</p>
+          <div class="sub-options">
+           <a th:href="@{'http://localhost:8082/flight/identify-customer?token=' + ${token}}">Identify Customer</a>
+            <a th:href="@{'http://localhost:8082/flight/identify-flight?token=' + ${token}}">Identify Flight</a>
+            <a th:href="@{'http://localhost:8082/flight/add-flight?token=' + ${token}}">Add Flight</a>
+
+          </div>
+        </div>
+
+        <div class="tab">
+          <h3>Boarding</h3>
+          <p>Manage boarding flow, validation, and boarding status updates.</p>
+        </div>
+
+        <div class="tab">
+          <h3>Assign Gate</h3>
+          <p>Assign gates, update gate changes, and coordinate operations.</p>
+        </div>
+
+        <div class="tab">
+          <h3>View Baggage Details</h3>
+          <p>View and track passenger baggage using PNR / Bag Tag.</p>
+        </div>
+<div class="tab">
+          <h3>Create PNR</h3>
+          <p>View and track passenger baggage using PNR / Bag Tag.</p>
+        </div>
+<div class="tab">
+          <h3>View Baggage Details</h3>
+          <p>View and track passenger baggage using PNR / Bag Tag.</p>
+        </div>
+<div class="tab">
+  <h3>Load Control</h3>
+  <p>Manage aircraft weight, balance, and load distribution.</p>
+</div>
+
+<div class="tab">
+  <h3>Flight Dispatch</h3>
+  <p>Plan routes, fuel requirements, and flight release.</p>
+</div>
+
+<div class="tab">
+  <h3>Crew Management</h3>
+  <p>Assign and track crew schedules and duty timings.</p>
+</div>
+
+<div class="tab">
+  <h3>Gate Operations</h3>
+  <p>Monitor gate allocation and turnaround activities.</p>
+</div>
+
+<div class="tab">
+  <h3>Fuel Management</h3>
+  <p>Calculate and track fuel requirements for flights.</p>
+</div>
+
+<div class="tab">
+  <h3>Flight Tracking</h3>
+  <p>Track real-time flight status and movement.</p>
+</div>
+
+<div class="tab">
+  <h3>Delay Management</h3>
+  <p>Handle delays and notify operational teams.</p>
+</div>
+
+<div class="tab">
+  <h3>Passenger Check-in</h3>
+  <p>Manage passenger check-in and boarding passes.</p>
+</div>
+
+<div class="tab">
+  <h3>Boarding Control</h3>
+  <p>Control passenger boarding and final counts.</p>
+</div>
+
+<div class="tab">
+  <h3>Cargo Handling</h3>
+  <p>Manage cargo loading and ULD allocation.</p>
+</div>
+
+<div class="tab">
+  <h3>Aircraft Maintenance</h3>
+  <p>Track aircraft health and maintenance schedules.</p>
+</div>
+
+<div class="tab">
+  <h3>Weather Monitoring</h3>
+  <p>Analyze weather conditions impacting flights.</p>
+</div>
+
+<div class="tab">
+  <h3>NOTAM Management</h3>
+  <p>Review aviation notices affecting operations.</p>
+</div>
+
+<div class="tab">
+  <h3>Slot Management</h3>
+  <p>Handle airport slot allocation and timing.</p>
+</div>
+
+<div class="tab">
+  <h3>Ground Handling</h3>
+  <p>Coordinate ramp, baggage, and servicing teams.</p>
+</div>
+
+<div class="tab">
+  <h3>Flight Analytics</h3>
+  <p>Analyze operational data and performance metrics.</p>
+</div>
+
+<div class="tab">
+  <h3>Incident Management</h3>
+  <p>Log and track operational incidents and issues.</p>
+</div>
+
+<div class="tab">
+  <h3>Security Check</h3>
+  <p>Ensure compliance with aviation security protocols.</p>
+</div>
+
+<div class="tab">
+  <h3>Turnaround Management</h3>
+  <p>Optimize aircraft turnaround time at airport.</p>
+</div>
+
+<div class="tab">
+  <h3>Flight Scheduling</h3>
+  <p>Manage flight timings and schedule planning.</p>
+</div>        
+
+
+      </div>
+
+      <div class="footer">
+        © 2025 Flight Management System
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      document.getElementById("dropdown").classList.toggle("show");
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.closest('.user-menu')) {
+        const dropdown = document.getElementById("dropdown");
+        if (dropdown && dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+

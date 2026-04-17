@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Identify Customer</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#121a33;
+      --muted:#9aa6c2;
+      --text:#e8eeff;
+      --line:rgba(255,255,255,.12);
+      --accent:#6aa6ff;
+      --accent2:#7cf0c5;
+      --danger:#ff6a7a;
+      --shadow:0 18px 50px rgba(0,0,0,.45);
+      --radius:18px;
+      --radius2:12px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      min-height:100vh;
+      background:
+        radial-gradient(1200px 700px at 20% 20%, rgba(106,166,255,.25), transparent 55%),
+        radial-gradient(900px 600px at 80% 25%, rgba(124,240,197,.18), transparent 50%),
+        radial-gradient(700px 500px at 60% 90%, rgba(255,106,122,.12), transparent 55%),
+        linear-gradient(180deg, #070a14, #0b1020 40%, #070a14);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+    }
+
+    .wrap{width:min(980px, 100%);}
+
+    .top{
+      display:flex;
+      gap:18px;
+      align-items:flex-start;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+
+    .brand{
+      display:flex; gap:12px; align-items:center;
+    }
+    .logo{
+      width:44px;height:44px;border-radius:14px;
+      background:linear-gradient(135deg, rgba(106,166,255,.95), rgba(124,240,197,.85));
+      box-shadow:0 14px 30px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:before{
+      content:"";
+      position:absolute; inset:-30%;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), transparent 45%);
+      transform:rotate(12deg);
+    }
+    .brand h1{
+      margin:0;
+      font-size:20px;
+      letter-spacing:.2px;
+      line-height:1.2;
+    }
+    .brand p{
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .hint{
+      max-width:380px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      box-shadow:0 8px 20px rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+    }
+    .hint strong{color:var(--text); font-weight:600}
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .cardHeader{
+      padding:18px 18px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      gap:14px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .title{
+      display:flex; flex-direction:column; gap:4px;
+    }
+    .title h2{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.2px;
+    }
+    .title span{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .dot{
+      width:10px;height:10px;border-radius:999px;
+      background:var(--accent2);
+      box-shadow:0 0 0 6px rgba(124,240,197,.12);
+    }
+
+    form{
+      padding:18px;
+      display:grid;
+      grid-template-columns: 1.2fr 1.2fr;
+      gap:14px;
+    }
+
+    .section{
+      grid-column:1 / -1;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:12px;
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:16px;
+      background:rgba(255,255,255,.03);
+      margin-bottom:2px;
+    }
+
+    .mode{
+      flex:1 1 170px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.16);
+      cursor:pointer;
+      user-select:none;
+      transition:transform .08s ease, border-color .15s ease, background .15s ease;
+    }
+    .mode:hover{transform:translateY(-1px); border-color:rgba(255,255,255,.22)}
+    .mode input{accent-color:var(--accent); width:16px;height:16px}
+    .mode b{font-size:13px}
+    .mode small{display:block; color:var(--muted); margin-top:2px; font-size:12px}
+
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:7px;
+      padding:12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.14);
+      transition:border-color .15s ease, box-shadow .15s ease;
+    }
+    .field:focus-within{
+      border-color:rgba(106,166,255,.55);
+      box-shadow:0 0 0 6px rgba(106,166,255,.12);
+    }
+
+    label{
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:.2px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    label span.req{
+      color:rgba(255,255,255,.7);
+      font-size:11px;
+      padding:2px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.04);
+    }
+
+    input[type="text"], input[type="search"]{
+      width:100%;
+      border:0;
+      outline:0;
+      font-size:14px;
+      padding:12px 12px;
+      border-radius:12px;
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+    }
+    input::placeholder{color:rgba(154,166,194,.7)}
+    .help{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+
+    .row2{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:14px;
+      grid-column:1 / -1;
+    }
+
+    .actions{
+      grid-column:1 / -1;
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      padding-top:2px;
+    }
+
+    .btns{display:flex; gap:10px; flex-wrap:wrap}
+    button{
+      border:0;
+      cursor:pointer;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:600;
+      font-size:14px;
+      transition:transform .08s ease, filter .15s ease;
+    }
+    button:active{transform:translateY(1px)}
+    .primary{
+      color:#081027;
+      background:linear-gradient(135deg, rgba(106,166,255,.95), rgba(124,240,197,.9));
+      box-shadow:0 12px 30px rgba(106,166,255,.18);
+    }
+    .ghost{
+      color:var(--text);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.14);
+    }
+    .meta{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .meta kbd{
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size:11px;
+      padding:3px 7px;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.22);
+      color:rgba(255,255,255,.8);
+    }
+
+    .result{
+      padding:0 18px 18px;
+    }
+    .resultBox{
+      display:none;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:rgba(255,255,255,.03);
+      padding:14px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+    .resultBox.show{display:block}
+    .resultBox strong{color:var(--text)}
+    .err{color:var(--danger)}
+
+    /* Responsive */
+    @media (max-width: 780px){
+      form{grid-template-columns:1fr}
+      .top{flex-direction:column}
+      .hint{max-width:unset}
+      .row2{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Flight Management</h1>
+          <p>Identify customer before servicing requests</p>
+        </div>
+      </div>
+
+      <div class="hint">
+        <strong>Tip:</strong> Choose <strong>one</strong> identification method and enter the required details.
+        If you have multiple identifiers, you can try the fastest one (PNR or E-Ticket) first.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="cardHeader">
+        <div class="title">
+          <h2>Identify Customer</h2>
+          <span>Search using PNR, Bag Tag, Name, or E-Ticket Number</span>
+        </div>
+        <div class="pill" title="System status">
+          <span class="dot"></span>
+          Ready to search
+        </div>
+      </div>
+
+      <!-- NOTE:
+           - Change th:action to your Spring endpoint, e.g. th:action="@{/customer/identify}"
+           - For now it points to a placeholder "/identify-customer"
+      -->
+      <form action="/flight/identify-customer" method="post" autocomplete="off">
+        <!-- Method selection -->
+         <input type="hidden" id="token" th:value="${token}">
+        <div class="section" role="group" aria-label="Identification method">
+          <label class="mode">
+            <input type="radio" name="mode" value="pnr" checked />
+            <div>
+              <b>PNR</b>
+              <small>6 character code (e.g., AB12CD)</small>
+            </div>
+          </label>
+
+          <label class="mode">
+            <input type="radio" name="mode" value="bagtag" />
+            <div>
+              <b>Bag Tag</b>
+              <small>Baggage tag number (e.g., X1A35)</small>
+            </div>
+          </label>
+
+          <label class="mode">
+            <input type="radio" name="mode" value="name" />
+            <div>
+              <b>First &amp; Last Name</b>
+              <small>(e.g., John Doe)</small>
+            </div>
+          </label>
+
+          <label class="mode">
+            <input type="radio" name="mode" value="eticket" />
+            <div>
+              <b>E-Ticket</b>
+              <small>13-digit ticket number (e.g., Q1CI7)</small>
+            </div>
+          </label>
+        </div>
+
+        <!-- PNR -->
+        <div class="field" data-mode="pnr">
+          <label for="pnr">PNR <span class="req">Required</span></label>
+          <input id="pnr" name="pnr" type="text" placeholder="Enter PNR (e.g., AB12CD)"
+                 maxlength="6" inputmode="text"
+                 oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'').trimStart()" />
+          <div class="help">Enter the 6-character booking reference. Letters and numbers only.</div>
+        </div>
+
+        <!-- Bag Tag -->
+        <div class="field" data-mode="bagtag">
+          <label for="bagtag">Bag Tag Number <span class="req">Required</span></label>
+          <input id="bagtag" name="bagtag" type="text" placeholder="Enter bag tag number"
+                 inputmode="numeric"
+                 oninput="this.value=this.value.replace(/[^0-9]/g,'').trimStart()" />
+          <div class="help">Numbers only. Use the tag printed on the baggage receipt.</div>
+        </div>
+
+        <!-- Name -->
+        <div class="row2" data-mode="name">
+          <div class="field">
+            <label for="firstName">First Name <span class="req">Required</span></label>
+            <input id="firstName" name="firstName" type="text" placeholder="Enter first name"
+                   oninput="this.value=this.value.trimStart()" />
+            <div class="help">As on the ticket/ID. Avoid extra spaces at the start.</div>
+          </div>
+
+          <div class="field">
+            <label for="lastName">Last Name <span class="req">Required</span></label>
+            <input id="lastName" name="lastName" type="text" placeholder="Enter last name"
+                   oninput="this.value=this.value.trimStart()" />
+            <div class="help">As on the ticket/ID.</div>
+          </div>
+        </div>
+
+        <!-- E-ticket -->
+        <div class="field" data-mode="eticket">
+          <label for="eticket">E-Ticket Number <span class="req">Required</span></label>
+          <input id="eticket" name="eticket" type="text" placeholder="Enter 13-digit e-ticket number"
+                 maxlength="13" inputmode="numeric"
+                 oninput="this.value=this.value.replace(/[^0-9]/g,'').trimStart()" />
+          <div class="help">Usually 13 digits (airline code + ticket number).</div>
+        </div>
+
+        <div class="actions">
+          <div class="btns">
+            <button class="primary" type="submit">Identify Customer</button>
+            <button class="ghost" type="reset">Clear</button>
+          </div>
+
+          <div class="meta">
+            <span>Quick keys:</span>
+            <kbd>Tab</kbd> <span>to navigate</span>
+          </div>
+        </div>
+      </form>
+
+      <div class="result">
+        <div id="resultBox" class="resultBox" aria-live="polite">
+          <strong>Note:</strong> Connect the form action to your backend endpoint.
+          This page currently posts to <strong>/identify-customer</strong>.
+          <div class="help" style="margin-top:10px">
+            If you want, I can also generate the matching Spring Controller + DTO to accept:
+            <strong>mode</strong> + (<strong>pnr</strong> | <strong>bagtag</strong> | <strong>firstName/lastName</strong> | <strong>eticket</strong>).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Simple UI behavior: show only fields for the selected mode
+    const modes = document.querySelectorAll('input[name="mode"]');
+    const modeBlocks = document.querySelectorAll('[data-mode]');
+    const resultBox = document.getElementById('resultBox');
+
+    function applyMode(mode){
+      modeBlocks.forEach(el => {
+        const show = el.getAttribute('data-mode') === mode;
+        el.style.display = show ? '' : 'none';
+
+        // Toggle required attributes based on mode
+        el.querySelectorAll('input').forEach(inp => inp.required = show);
+      });
+
+      // Focus first visible input for speed
+      const firstVisible = Array.from(document.querySelectorAll('[data-mode="'+mode+'"] input'))[0];
+      if(firstVisible) firstVisible.focus();
+
+      // Hide note when switching
+      if(resultBox) resultBox.classList.remove('show');
+    }
+
+    modes.forEach(r => r.addEventListener('change', e => applyMode(e.target.value)));
+    applyMode(document.querySelector('input[name="mode"]:checked').value);
+
+    // Show note on submit (demo only). Remove this block if you don't want JS.
+    document.querySelector('form').addEventListener('submit', () => {
+      if(resultBox) resultBox.classList.add('show');
+    });
+  </script>
+</body>
+</html>

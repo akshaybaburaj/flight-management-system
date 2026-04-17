@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Identify Flight - Flight Management</title>
+
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#121a33;
+      --muted:#9aa6c2;
+      --text:#e8eeff;
+      --line:rgba(255,255,255,.12);
+      --accent:#6aa6ff;
+      --accent2:#7cf0c5;
+      --danger:#ff6a7a;
+      --shadow:0 18px 50px rgba(0,0,0,.45);
+      --radius:18px;
+      --radius2:12px;
+      --font: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      min-height:100vh;
+      padding:0;
+      background:
+        radial-gradient(1200px 700px at 20% 20%, rgba(106,166,255,.25), transparent 55%),
+        radial-gradient(900px 600px at 80% 25%, rgba(124,240,197,.18), transparent 50%),
+        radial-gradient(700px 500px at 60% 90%, rgba(255,106,122,.12), transparent 55%),
+        linear-gradient(180deg, #070a14, #0b1020 40%, #070a14);
+    }
+
+    /* Full-width top navbar with bottom rounded corners */
+    .navbar{
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+
+      padding:14px 22px;
+
+      border:0;
+      border-bottom:1px solid var(--line);
+      border-radius: 0 0 22px 22px;
+      overflow:hidden;
+
+      background: rgba(10, 14, 30, 0.78);
+      backdrop-filter: blur(12px);
+
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+      z-index: 999;
+    }
+
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      background:linear-gradient(135deg, rgba(106,166,255,.95), rgba(124,240,197,.85));
+      box-shadow:0 14px 30px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .logo:before{
+      content:"";
+      position:absolute; inset:-30%;
+      background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), transparent 45%);
+      transform:rotate(12deg);
+    }
+
+    .brand-link{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      text-decoration:none;
+      color:var(--text);
+      flex:0 0 auto;
+    }
+    .brand-text h2{ margin:0; font-size:18px; letter-spacing:.2px; line-height:1.2; }
+    .brand-text p{ margin:3px 0 0; color:var(--muted); font-size:12px; }
+
+    .nav-links{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex: 1;
+      justify-content:center;
+      min-width: 0;
+    }
+    .nav-links a{
+      text-decoration:none;
+      color:var(--text);
+      font-size:13px;
+      font-weight:600;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.12);
+      transition:transform .08s ease, border-color .15s ease, background .15s ease;
+      white-space:nowrap;
+      opacity:.92;
+    }
+    .nav-links a:hover{
+      transform:translateY(-1px);
+      border-color:rgba(255,255,255,.22);
+      background:rgba(255,255,255,.06);
+    }
+    .nav-links a.active{
+      border-color: rgba(106,166,255,.55);
+      background: rgba(106,166,255,.14);
+      opacity: 1;
+    }
+
+    /* User menu */
+    .user-menu{ position:relative; display:inline-block; flex:0 0 auto; }
+    .user-btn{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      cursor:pointer;
+      user-select:none;
+    }
+    .user-btn:hover{ border-color:rgba(255,255,255,.22); }
+
+    .user-menu img{
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      border:2px solid rgba(106,166,255,.6);
+      object-fit:cover;
+    }
+    .user-name{ display:flex; flex-direction:column; line-height:1.1; }
+    .user-name b{ font-size:13px; color:var(--text); }
+    .user-name span{ font-size:12px; color:var(--muted); }
+
+    .dropdown-content{
+      display:none;
+      position:absolute;
+      right:0;
+      margin-top:10px;
+      min-width:170px;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      background:rgba(18,26,51,.92);
+      box-shadow:0 18px 50px rgba(0,0,0,.5);
+      backdrop-filter: blur(10px);
+      z-index:20;
+    }
+    .dropdown-content a,
+    .dropdown-content form button{
+      display:block;
+      width:100%;
+      padding:12px 14px;
+      border:0;
+      text-align:left;
+      background:none;
+      color:var(--text);
+      text-decoration:none;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .dropdown-content a:hover,
+    .dropdown-content form button:hover{ background:rgba(255,255,255,.06); }
+    .dropdown-content .danger:hover{
+      background:rgba(255,106,122,.12);
+      color:var(--danger);
+    }
+    .show{display:block}
+
+    /* Layout */
+    .wrap{ width:100%; margin:0; padding:22px; }
+    .content{
+      margin-top: 90px; /* space for navbar */
+      padding-bottom: 22px;
+    }
+
+    .page-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:14px;
+      flex-wrap:wrap;
+      margin: 10px 0 16px;
+    }
+
+    .title-card{
+      flex: 1 1 520px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+    .title-card h1{
+      margin:0 0 6px;
+      font-size:18px;
+      letter-spacing:.2px;
+    }
+    .title-card p{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+
+    .meta-chip{
+      flex: 0 1 360px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:rgba(255,255,255,.04);
+      box-shadow:0 8px 20px rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.35;
+      align-self:stretch;
+    }
+    .meta-chip strong{ color:var(--text); font-weight:600; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      box-shadow:0 14px 35px rgba(0,0,0,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .card:before{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background:radial-gradient(circle at 30% 30%, rgba(106,166,255,.18), transparent 55%);
+      transform:rotate(10deg);
+      pointer-events:none;
+    }
+
+    .card h3{
+      margin:0 0 10px;
+      font-size:16px;
+      letter-spacing:.2px;
+      position:relative;
+    }
+
+    .field{
+      margin:10px 0;
+      position:relative;
+    }
+    label{
+      display:block;
+      font-size:12px;
+      color:var(--muted);
+      margin:0 0 6px;
+    }
+    input, select{
+      width:100%;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.18);
+      color:var(--text);
+      outline:none;
+    }
+    input::placeholder{ color: rgba(154,166,194,.9); }
+    input:focus, select:focus{ border-color: rgba(106,166,255,.6); }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      padding:12px 14px;
+      border:none;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:700;
+      transition: transform .08s ease, filter .15s ease, border-color .15s ease, background .15s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      text-decoration:none;
+      user-select:none;
+    }
+    .btn-primary{
+      color:#071022;
+      background: linear-gradient(135deg, rgba(106,166,255,1), rgba(124,240,197,1));
+      box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    }
+    .btn-primary:hover{ transform: translateY(-1px); filter: brightness(1.03); }
+
+    .btn-ghost{
+      color:var(--text);
+      background: rgba(0,0,0,.14);
+      border:1px solid rgba(255,255,255,.14);
+    }
+    .btn-ghost:hover{
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06);
+    }
+
+    .result{
+      margin-top:12px;
+      border-top:1px solid rgba(255,255,255,.12);
+      padding-top:12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+      position:relative;
+    }
+
+    .kv{
+      display:grid;
+      grid-template-columns: 160px 1fr;
+      gap:8px 12px;
+      margin-top:10px;
+    }
+    .k{ color:rgba(154,166,194,.95); }
+    .v{ color:var(--text); }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.16);
+      color:var(--text);
+      font-size:12px;
+      font-weight:700;
+    }
+    .dot{
+      width:8px; height:8px; border-radius:999px;
+      background: rgba(124,240,197,.9);
+      box-shadow: 0 0 0 4px rgba(124,240,197,.15);
+    }
+
+    .footer{
+      margin:22px 0 6px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+
+    @media (max-width: 980px){
+      .grid{ grid-template-columns: 1fr; }
+      .meta-chip{ flex: 1 1 100%; }
+    }
+    @media (max-width: 900px){
+      .nav-links{ display:none; }
+    }
+    @media (max-width: 780px){
+      .navbar{ padding:12px 16px; }
+      .wrap{ padding:16px; }
+      .content{ margin-top: 86px; }
+      .row{ grid-template-columns: 1fr; }
+      .kv{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <div class="navbar">
+    <a class="brand-link" th:href="@{/home}">
+      <div class="logo" aria-hidden="true"></div>
+      <div class="brand-text">
+        <h2>Indian Airways</h2>
+        <p>Operations console</p>
+      </div>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary">
+      <a th:href="@{/identify-customer}">Identify Customer</a>
+      <a class="active" th:href="@{/identify-flight}">Identify Flight</a>
+      <a th:href="@{/boarding}">Boarding</a>
+      <a th:href="@{/assign-gate}">Assign Gate</a>
+      <a th:href="@{/baggage}">Baggage</a>
+    </nav>
+
+    <div class="user-menu">
+      <div class="user-btn" onclick="toggleDropdown()" role="button" aria-haspopup="true" aria-expanded="false">
+        <img src="/images/user.jpeg" alt="User">
+        <div class="user-name">
+          <b th:text="${username}">User</b>
+          <span>Account</span>
+        </div>
+      </div>
+
+      <div id="dropdown" class="dropdown-content">
+        <a th:href="@{/settings}">Settings</a>
+        <form th:action="@{/logout}" method="post">
+          <button class="danger" type="submit">Logout</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="content">
+
+     
+      <div class="grid">
+
+        <!-- Search form -->
+        <div class="card">
+          <h3>Search Flight</h3>
+
+          <!-- OPTION A: single form with multiple filters -->
+          <form th:action="@{/flight/identify-flight}" method="get">
+            <input type="hidden" name="token" th:value="${token}" />
+            <div class="row">
+              <div class="field">
+                <label>Search Type</label>
+                <select name="type">
+                  <option value="FLIGHT_NO">Flight Number</option>
+                  <option value="PNR">PNR</option>
+                  <option value="ROUTE">Route</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Date</label>
+                <input type="date" name="date" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Flight Number / PNR</label>
+              <input type="text" name="q" placeholder="e.g., IA-302 / PNR12345"
+                     oninput="this.value = this.value.trimStart()" />
+                     <input type="hidden" id="token" th:value="${token}">
+            </div>
+
+            <div class="row">
+              <div class="field">
+                <label>From (optional for route)</label>
+                <input type="text" name="from" placeholder="e.g., DEL"
+                       oninput="this.value = this.value.trimStart()" />
+              </div>
+              <div class="field">
+                <label>To (optional for route)</label>
+                <input type="text" name="to" placeholder="e.g., BOM"
+                       oninput="this.value = this.value.trimStart()" />
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-primary" type="submit">Search</button>
+              <a class="btn btn-ghost" th:href="@{/identify-flight}">Reset</a>
+            </div>
+          </form>
+
+          <!-- Example: error message placeholder -->
+          <p class="result" th:if="${param.error}">
+            <span style="color:#ff8b98;font-weight:700;">No matching flight found.</span>
+            Check the input and try again.
+          </p>
+        </div>
+
+        <!-- Result preview -->
+        <div class="card">
+          <h3>Result</h3>
+
+          <!-- Default state -->
+          <div th:if="${flight == null}">
+            <span class="badge"><span class="dot"></span> Awaiting search</span>
+            <div class="result">
+              Enter flight details and click <strong style="color:var(--text);">Search</strong>.
+              The selected flight summary will appear here.
+            </div>
+          </div>
+
+          <!-- When flight is available from controller -->
+          <div th:if="${flight != null}">
+            <span class="badge"><span class="dot"></span> Flight matched</span>
+
+            <div class="kv">
+              <div class="k">Flight No</div>
+              <div class="v" th:text="${flight.flightNumber}">IA-302</div>
+
+              <div class="k">Date</div>
+              <div class="v" th:text="${flight.flightDate}">2026-01-17</div>
+
+              <div class="k">Route</div>
+              <div class="v">
+                <span th:text="${flight.source}">DEL</span> → <span th:text="${flight.destination}">BOM</span>
+              </div>
+
+              <div class="k">Departure</div>
+              <div class="v" th:text="${flight.departureTime}">10:30</div>
+<!--
+              <div class="k">Gate</div>
+              <div class="v" th:text="${flight.gate}">A12</div>
+
+              <div class="k">Status</div>
+              <div class="v" th:text="${flight.status}">On Time</div>
+            </div>
+-->
+            <div class="actions" style="margin-top:14px;">
+              <a class="btn btn-primary" th:href="@{/boarding(flightNumber=${flight.flightNumber},date=${flight.flightDate})}">
+                Proceed to Boarding
+              </a>
+              <a class="btn btn-ghost" th:href="@{/assign-gate(flightNumber=${flight.flightNumber},date=${flight.flightDate})}">
+                Assign / Update Gate
+              </a>
+            </div>
+          </div>
+          
+          <!-- 🔥 NEW: Multiple flights table -->
+<div th:if="${flights != null}">
+  <span class="badge"><span class="dot"></span> Multiple Flights Found</span>
+
+  <div style="margin-top:12px; overflow-x:auto;">
+    <table style="width:100%; border-collapse: collapse; font-size:13px;">
+      
+      <thead>
+        <tr style="border-bottom:1px solid rgba(255,255,255,.2); text-align:left;">
+          <th style="padding:10px;">Flight No</th>
+          <th style="padding:10px;">Airline</th>
+          <th style="padding:10px;">Route</th>
+          <th style="padding:10px;">Departure</th>
+          <th style="padding:10px;">Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr th:each="f : ${flights}"
+            style="border-bottom:1px solid rgba(255,255,255,.1);">
+
+          <td style="padding:10px;" th:text="${f.flightNumber}">AI101</td>
+          <td style="padding:10px;" th:text="${f.airline}">Air India</td>
+
+          <td style="padding:10px;">
+            <span th:text="${f.source}">DEL</span> →
+            <span th:text="${f.destination}">BOM</span>
+          </td>
+
+          <td style="padding:10px;" th:text="${f.departureTime}">10:00</td>
+
+          <td style="padding:10px;">
+            <a class="btn btn-primary"
+               th:href="@{/flight/identify-flight(q=${f.flightNumber},token=${token})}">
+               Select
+            </a>
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+</div>
+
+        </div>
+      </div>
+
+      <div class="footer">© 2025 Flight Management System</div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      document.getElementById("dropdown").classList.toggle("show");
+    }
+
+    window.onclick = function(event) {
+      if (!event.target.closest('.user-menu')) {
+        const dropdown = document.getElementById("dropdown");
+        if (dropdown && dropdown.classList.contains('show')) {
+          dropdown.classList.remove('show');
+        }
+      }
+    }
+  </script>
+</body>
+</html>
