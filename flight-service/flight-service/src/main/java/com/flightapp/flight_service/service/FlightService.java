@@ -27,6 +27,10 @@ public class FlightService {
     return flightRepository.findByFlightNumber(flightNumber);
 }
 
+ public List<Flight> findByFlightNumberAndFlightDate(String flightNumber,String flightDate) {
+    return flightRepository.findByFlightNumberAndFlightDate(flightNumber,flightDate);
+}
+
 public List<Flight> findByRoute(String source, String destination) {
     return flightRepository.findBySourceAndDestination(source, destination);
 }

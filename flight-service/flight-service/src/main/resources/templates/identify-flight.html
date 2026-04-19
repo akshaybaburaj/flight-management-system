@@ -492,8 +492,13 @@
         <div class="card">
           <h3>Result</h3>
 
+          <!-- 🔴 Show message ONLY when no flights and no single flight -->
+<div th:if="${message != null}" 
+style="color:#ff6a7a; margin-bottom:10px;">
+<p th:text="${message}"></p>     
+  </div>
           <!-- Default state -->
-          <div th:if="${flight == null}">
+         <div th:if="${flight == null and (flights == null or #lists.isEmpty(flights)) and message == null}">
             <span class="badge"><span class="dot"></span> Awaiting search</span>
             <div class="result">
               Enter flight details and click <strong style="color:var(--text);">Search</strong>.
@@ -502,7 +507,7 @@
           </div>
 
           <!-- When flight is available from controller -->
-          <div th:if="${flight != null}">
+          <div th:if="${flight != null and message == null}">
             <span class="badge"><span class="dot"></span> Flight matched</span>
 
             <div class="kv">
@@ -537,8 +542,9 @@
             </div>
           </div>
           
+
           <!-- 🔥 NEW: Multiple flights table -->
-<div th:if="${flights != null}">
+<div th:if="${flights != null and !#lists.isEmpty(flights) and message == null}">
   <span class="badge"><span class="dot"></span> Multiple Flights Found</span>
 
   <div style="margin-top:12px; overflow-x:auto;">
