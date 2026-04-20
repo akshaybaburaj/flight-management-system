@@ -1,5 +1,8 @@
 package com.flightapp.customer_service.entity;
 import java.time.LocalDate;
+
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -17,12 +20,14 @@ public class Customer{
     private String lastName;
     private String gender;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
 
     private String nationality;
     private String passportNumber;
 
     private String flightNumber;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate flightDate;
 
     public String getPnr() {
