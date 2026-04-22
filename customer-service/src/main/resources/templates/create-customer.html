@@ -159,6 +159,36 @@
         <input type="date" name="flightDate" required>
       </div>
     </div>
+    <div th:if="${customers != null}">
+
+  <h3 style="margin-top:20px;">Customer List</h3>
+
+  <table style="width:100%; border-collapse: collapse; margin-top:10px;">
+
+    <thead>
+      <tr style="border-bottom:1px solid #555;">
+        <th>PNR</th>
+        <th>Name</th>
+        <th>Flight</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr th:each="c : ${customers}">
+        <td th:text="${c.pnr}">PNR123</td>
+        <td>
+          <span th:text="${c.firstName}"></span>
+          <span th:text="${c.lastName}"></span>
+        </td>
+        <td th:text="${c.flightNumber}">AI101</td>
+        <td th:text="${#temporals.format(c.flightDate, 'yyyy-MM-dd')}"></td>
+      </tr>
+    </tbody>
+
+  </table>
+
+</div>
 
     <!-- Token -->
     <input type="hidden" name="token" th:value="${token}">

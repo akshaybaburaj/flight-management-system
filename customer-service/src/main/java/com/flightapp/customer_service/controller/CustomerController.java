@@ -16,7 +16,7 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @GetMapping("/add")
+    @GetMapping("/create-customer")
     public String showForm() {
         return "create-customer";
     }
@@ -24,10 +24,14 @@ public class CustomerController {
     @PostMapping("/save")
     public String saveCustomer(Customer customer, Model model) {
 
-        Customer saved = customerService.saveCustomer(customer);
-
+       
+       // ✅ Save customer and get saved object
+    Customer saved = customerService.saveCustomer(customer);
         model.addAttribute("pnr", saved.getPnr());
 
-        return "success";
+        // 🔹 Send ALL customers (for table)
+        model.addAttribute("customers", customerService.getAllCustomers());
+
+        return "create-customer";
     }
 }
