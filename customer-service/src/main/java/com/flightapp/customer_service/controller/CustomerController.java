@@ -26,7 +26,7 @@ public class CustomerController {
 
        
        // ✅ Save customer and get saved object
-    Customer saved = customerService.saveCustomer(customer);
+        Customer saved = customerService.saveCustomer(customer);
         model.addAttribute("pnr", saved.getPnr());
 
         // 🔹 Send ALL customers (for table)
